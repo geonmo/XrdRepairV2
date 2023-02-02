@@ -1,0 +1,23 @@
+Bootstrap: docker
+From: python:3.11.1-bullseye
+IncludeCmd: yes
+
+%labels
+creator "geonmo@kisti.re.kr"
+version "1.0.0"
+
+%environment
+export LANG="en_US.utf8"
+
+%post
+apt update -y
+apt install -y build-essential
+apt install -y cmake curl 
+
+
+pip3 install wheel setuptools pipenv 
+pip3 install xrootd dbs3-client certifi
+pip3 install dataclasses
+
+
+
