@@ -8,7 +8,7 @@ creator "geonmo@kisti.re.kr"
 version "1.0.0"
 
 %environment
-export LANG="en_US.utf8"
+export LANG="ko_KR.utf-8"
 
 %post
 apt update -y

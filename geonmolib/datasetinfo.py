@@ -30,9 +30,7 @@ class DatasetInfo:
             else:
                 print(f"Error! {dataset} is not existed.")
     def getFileListWithFormat(self):
-        if(self.verbose): print('getFileListWithFormat')
         fileinfo_format =[]
-        print(dir(self.dataset_fileinfo))
         for fileinfo in self.dataset_fileinfo:
             fileinfo_format.append({ "logical_file_name": fileinfo["logical_file_name"],
                                      "file_size": fileinfo["file_size"],

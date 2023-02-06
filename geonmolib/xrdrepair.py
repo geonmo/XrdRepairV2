@@ -42,23 +42,29 @@ class XrdRepair:
     output: str
     local: bool
     verbose: bool
-
-
     def __post_init__(self):
         # Parse Option and Config                                                                                                                             
         self.config = ConfigParser()
         self.config.read(self.configFile)
-        if ( "LocalPrefix" in self.config['SiteInfo']) :
-            self.local_path = self.config['SiteInfo']['LocalPrefix']
+        if "SiteInfo" in self.config:
+            self.XrdHost   = self.config['SiteInfo']['XrdHost']
+            self.XrdPrefix = self.config['SiteInfo']['XrdPrefix']
+            self.cmsaaa = self.config['SiteInfo']['CMSAAA']
+            if self.local:
+                if "LocalPrefix" in self.config['SiteInfo'] :
+                    self.local_path = self.config['SiteInfo']['LocalPrefix']
+                else: 
+                    logging.critical("No configure for local prefix")
+                    return -1
         else: 
             self.local_path = os.getcwd()
-        self.XrdHost   = self.config['SiteInfo']['XrdHost']
-        self.XrdPrefix = self.config['SiteInfo']['XrdPrefix']
+            self.XrdHost = "root://cms-xrdr.sdfarm.kr:1094"
+            self.XrdPrefix = "/xrd"
         self.downloader = client.CopyProcess()
     def printParams(self):
         print(type(self.config),self.config['SiteInfo']['LocalPrefix'])
     def getFilelist(self):
-        logging.info("getFileList")
+        logging.info("Acquire Dataset file list from DBS server...")
         self.filelist =[]
         datasets = open(self.dataset).readlines()
         for dataset in datasets:
@@ -72,7 +78,7 @@ class XrdRepair:
             ds.getFileList()
             self.filelist.extend(ds.getFileListWithFormat())
     def checkingfile(self):
-        logging.info(self.XrdHost, self.XrdPrefix)
+        logging.info(f"Setup for XrdSite Info : {self.XrdHost}, {self.XrdPrefix}")
         self.total_files = len(self.filelist)
         count = {'normal file':0,'duplicated file':0,'missing file':0,'broken file':0}
         check_filelist = {'duplicated file':{}, 'missing file':{}, 'broken file':{} }
@@ -122,10 +128,10 @@ class XrdRepair:
                     print(f"{deeplocate}")
                     print(f"{status}")
             else:
-                logging.info(_("The file is missing"))
+                logging.info(_("This file is missing"))
                 count['missing file'] = count['missing file'] + 1
                 if self.autorecover:
-                    logging.info(_("The file is transferring."))
+                    logging.info(_("This file will be transferred."))
                     self.addDownloadFile(filename)
         self.count = count
         self.checklist = check_filelist
@@ -135,15 +141,9 @@ class XrdRepair:
 
     def addDownloadFile(self, filename):
         xrd_filepath = f"{self.XrdPrefix}{filename}"
-        cmsaaa = self.config['SiteInfo']['CMSAAA']
-        src  = f"{cmsaaa}/{filename}"
+        src  = f"{self.cmsaaa}/{filename}"
         if self.local:
-           if ( self.config['SiteInfo']['LocalPrefix'] is not None) :
-               local_path = self.config['SiteInfo']['LocalPrefix']
-               dest = f"{local_path}/{xrd_filepath}"
-           else: 
-               print("No configure for local prefix")
-               return -1
+               dest = f"{self.local_path}/{xrd_filepath}"
         else: 
            dest = f"{self.XrdHost}/{xrd_filepath}"
         logging.info(f"Register transferring from {src} to {dest}.")
@@ -151,6 +151,7 @@ class XrdRepair:
 
     def fileDownload(self):
         if ( self.dryrun): return 0
+        logging.info(_("Now, missing or broken files are downloading..."))
         self.downloader.prepare()
         handler = MyCopyProgressHandler()
         status, response = self.downloader.run(handler=handler)
