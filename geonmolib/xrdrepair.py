@@ -69,7 +69,7 @@ class XrdRepair:
             else:
                 instance = "global"
             ds = DatasetInfo(datasetname=dataset, verbose=self.verbose, instance="global")
-            ds.getFileListFromDBS3()
+            ds.getFileList()
             self.filelist.extend(ds.getFileListWithFormat())
     def checkingfile(self):
         logging.info(self.XrdHost, self.XrdPrefix)

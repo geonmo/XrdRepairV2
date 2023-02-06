@@ -1,9 +1,19 @@
+[tool.poetry]
+name = "geonmolib"
+version = "0.1.2"
+description = "Python library for GSDC's geonmo"
+authors = ["Geonmo Ryu <geonmo@kisti.re.kr>"]
+license = "apache"
+
+[tool.poetry.dependencies]
+python = ">=3.6.0,<3.7"
+xrootd = "^5.5.1"
+certifi = "^2022.12.7"
+dbs3-client = "^4.0.12"
+dataclasses = "^0.8"
+
+[tool.poetry.dev-dependencies]
+
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel",
-    "xrootd",
-    "dbs3-client",
-    "certifi"
-]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

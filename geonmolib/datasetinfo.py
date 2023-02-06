@@ -11,15 +11,14 @@ class DatasetInfo:
     datasetname:list
     verbose:bool
     instance:str = "phys03"
-    dataset_fileinfo:dict[str] = field( default_factory=dict)
-    def getFileListFromDBS3(self):
+    dataset_fileinfo: list = field(init=False, default_factory=list)
+    def __post_init__(self):
         if(self.datasetname[0] == "#"): return []
         if(self.verbose): 
             print('getFileListFromDBS3')
             print(f"DataSetName at DatasetInfo : {self.datasetname}")
-        dbs = DbsApi(f'https://cmsweb.cern.ch/dbs/prod/{self.instance}/DBSReader')
-        self.dataset_fileinfo[self.datasetname] = dbs.listFiles(dataset = self.datasetname, detail=1)
-        return(self.dataset_fileinfo)
+        dbs = DbsApi(f'https://cmsweb.cern.ch/dbs/prod/{self.instance}/DBSReader', debug=1)
+        self.dataset_fileinfo = dbs.listFiles(dataset = self.datasetname, detail=1)
     def getFileList(self):
         return(self.dataset_fileinfo)
     def printFiles(self,dataset=None):
@@ -30,15 +29,14 @@ class DatasetInfo:
                 print(self.dataset_fileinfo[dataset])
             else:
                 print(f"Error! {dataset} is not existed.")
-    def getFileListWithFormat(self,want_dataset=None):
+    def getFileListWithFormat(self):
         if(self.verbose): print('getFileListWithFormat')
         fileinfo_format =[]
-        for dataset in self.dataset_fileinfo.keys():
-            if ( want_dataset is not None and dataset != want_dataset): continue
-            for fileinfo in self.dataset_fileinfo[dataset]:
-                fileinfo_format.append({ "logical_file_name": fileinfo["logical_file_name"],
-                                         "file_size": fileinfo["file_size"],
-                                         "adler32": fileinfo["adler32"] })
+        print(dir(self.dataset_fileinfo))
+        for fileinfo in self.dataset_fileinfo:
+            fileinfo_format.append({ "logical_file_name": fileinfo["logical_file_name"],
+                                     "file_size": fileinfo["file_size"],
+                                     "adler32": fileinfo["adler32"] })
         return(fileinfo_format)
 
 if __name__ == "__main__":
