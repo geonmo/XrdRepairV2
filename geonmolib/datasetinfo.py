@@ -17,7 +17,7 @@ class DatasetInfo:
         if(self.verbose): 
             print('getFileListFromDBS3')
             print(f"DataSetName at DatasetInfo : {self.datasetname}")
-        dbs = DbsApi(f'https://cmsweb.cern.ch/dbs/prod/{self.instance}/DBSReader', debug=1)
+        dbs = DbsApi(f'https://cmsweb.cern.ch/dbs/prod/{self.instance}/DBSReader')
         self.dataset_fileinfo = dbs.listFiles(dataset = self.datasetname, detail=1)
     def getFileList(self):
         return(self.dataset_fileinfo)
