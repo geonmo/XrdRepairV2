@@ -1,11 +1,12 @@
+#-*- coding: utf-8 -*-
 import setuptools
-
-with open("README.md", "r", encoding="utf-8") as fh:
+import io
+with io.open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="cms-xrd-repair",
-    version="v2.0.1",
+    name="gsdcpython",
+    version="0.2.0",
     author="geonmo",
     author_email="geonmo@kisti.re.kr",
     description="Compare CMS DAS DB and site's data",
