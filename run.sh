@@ -1,2 +1,2 @@
 #!/bin/bash
-apptainer run devspace.sif $*
+apptainer run -B /etc/grid-security/certificates devspace.sif $*

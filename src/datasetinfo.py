@@ -13,15 +13,12 @@ class DatasetInfo:
     instance:str = "phys03"
     dataset_fileinfo:dict[str] = field( default_factory=dict)
     def getFileListFromDBS3(self):
+        if(self.datasetname[0] == "#"): return []
         if(self.verbose): 
             print('getFileListFromDBS3')
             print(f"DataSetName at DatasetInfo : {self.datasetname}")
         dbs = DbsApi(f'https://cmsweb.cern.ch/dbs/prod/{self.instance}/DBSReader')
-        for dataset in self.datasetname:
-            dataset=dataset.strip()
-            if(self.verbose): 
-                print(dataset)
-            self.dataset_fileinfo[dataset] = dbs.listFiles(dataset = dataset, detail=1)
+        self.dataset_fileinfo[self.datasetname] = dbs.listFiles(dataset = self.datasetname, detail=1)
         return(self.dataset_fileinfo)
     def getFileList(self):
         return(self.dataset_fileinfo)
