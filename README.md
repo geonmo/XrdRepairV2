@@ -14,6 +14,15 @@ The --with option when the curl program is installed is very important.
 Curl which is compiled "--with-nss" can not parse proxy certificate propely (/tmp/x509up\_uXXX).
 So, you need to use a different curl binary, such as cmsenv, 
 or remove proxy CA(voms-proxy-destroy) and userkey's passphase + set env "X509\_USER\_CERT" and "X509\_USER\_KEY".
-
+```bash
+* NSS: client certificate from file
+*       subject: CN=541999646,CN=Geonmo Ryu,CN=697493,CN=geonmo,OU=Users,OU=Organic Units,DC=cern,DC=ch
+*       start date: Feb 07 06:31:34 2023 GMT
+*       expire date: Feb 07 18:36:34 2023 GMT
+*       common name: 541999646
+*       issuer: CN=Geonmo Ryu,CN=697493,CN=geonmo,OU=Users,OU=Organic Units,DC=cern,DC=ch
+* NSS error -12195 (SSL_ERROR_UNKNOWN_CA_ALERT)
+```
+  
 ## Requirement
 * C++14 Complier
