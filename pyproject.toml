@@ -1,9 +1,11 @@
 [tool.poetry]
 name = "geonmolib"
-version = "0.1.2"
+version = "0.1.3"
 description = "Python library for GSDC's geonmo"
 authors = ["Geonmo Ryu <geonmo@kisti.re.kr>"]
+readme = "README.md"
 license = "apache"
+repository = "https://github.com/geonmo/geonmolib"
 
 [tool.poetry.dependencies]
 python = ">=3.6.0,<3.7"
