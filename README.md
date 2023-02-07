@@ -14,6 +14,9 @@ The --with option when the curl program is installed is very important.
 Curl which is compiled "--with-nss" can not parse proxy certificate propely (/tmp/x509up\_uXXX).
 So, you need to use a different curl binary, such as cmsenv, 
 or remove proxy CA(voms-proxy-destroy) and userkey's passphase + set env "X509\_USER\_CERT" and "X509\_USER\_KEY".
+* It is similar to https://github.com/benoitc/gunicorn/issues/1934.
+
+
 ```bash
 * NSS: client certificate from file
 *       subject: CN=541999646,CN=Geonmo Ryu,CN=697493,CN=geonmo,OU=Users,OU=Organic Units,DC=cern,DC=ch
