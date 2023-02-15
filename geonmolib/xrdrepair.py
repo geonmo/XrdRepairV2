@@ -9,6 +9,8 @@ from datasetinfo import DatasetInfo
 from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
 
+import pickle
+
 import logging
 
 import os, sys
@@ -42,6 +44,7 @@ class XrdRepair:
     output: str
     local: bool
     verbose: bool
+    count_downloadfile: int = 0;
     def __post_init__(self):
         # Parse Option and Config                                                                                                                             
         self.config = ConfigParser()
@@ -65,10 +68,18 @@ class XrdRepair:
         print(type(self.config),self.config['SiteInfo']['LocalPrefix'])
     def getFilelist(self):
         logging.info("Acquire Dataset file list from DBS server...")
+        if os.path.exists("datasets.db"):
+            with open("datasets.db",'rb') as f:
+                datasets_cache = pickle.load(f)
+        else:
+            datasets_cache = {}
         self.filelist =[]
         datasets = open(self.dataset).readlines()
         for dataset in datasets:
             dataset = dataset.strip()
+            if dataset in datasets_cache:
+                self.filelist.extend(datasets_cache[dataset])
+                continue
             datasettype = dataset.split("/")[-1]
             if(datasettype == "USER"):
                 instance = "phys03"
@@ -76,7 +87,12 @@ class XrdRepair:
                 instance = "global"
             ds = DatasetInfo(datasetname=dataset, verbose=self.verbose, instance="global")
             ds.getFileList()
-            self.filelist.extend(ds.getFileListWithFormat())
+            _flist = ds.getFileListWithFormat()
+            self.filelist.extend(_flist)
+            datasets_cache[dataset] = _flist
+            with open("datasets.db","wb") as f:
+                pickle.dump(datasets_cache, f)
+
     def checkingfile(self):
         logging.info(f"Setup for XrdSite Info : {self.XrdHost}, {self.XrdPrefix}")
         self.total_files = len(self.filelist)
@@ -148,14 +164,17 @@ class XrdRepair:
            dest = f"{self.XrdHost}/{xrd_filepath}"
         logging.info(f"Register transferring from {src} to {dest}.")
         self.downloader.add_job(src,dest,sourcelimit=4,force=True)
+        self.count_downloadfile = self.count_downloadfile+1
+        with open("download_files.txt","a+t") as f:
+            f.write(src)
 
     def fileDownload(self):
-        if ( self.dryrun): return 0
+        if self.dryrun or self.count_downloadfile ==0: return 0
         logging.info(_("Now, missing or broken files are downloading..."))
         self.downloader.prepare()
         handler = MyCopyProgressHandler()
         status, response = self.downloader.run(handler=handler)
-        if ( response[0]["status"].ok ):
+        if len(response) >1 and response[0]["status"].ok :
             print(response)
             return 0
         else:
